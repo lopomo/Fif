@@ -1,0 +1,14 @@
+{
+  "name": "clients",
+  "version": "3.0.0",
+  "description": "",
+  "scripts": {
+	"start": "web-ext run -s dist/"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+	 "typescript": "2.4.2",
+	 "@types/chrome": "^0.0.46"
+  }
+}

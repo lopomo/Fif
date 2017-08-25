@@ -1,0 +1,17 @@
+﻿{
+	"name": "FineAdmin",
+	"description": "FineAdmin",
+	"version": "1.0",
+	"background": {
+		"scripts": [
+			"background_scripts/background.js"
+		]
+	},
+	"manifest_version": 2,
+	"permissions": [
+		"webNavigation",
+		"background",
+		"tabs", 
+		"<all_urls>" 
+	]
+}
