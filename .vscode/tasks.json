@@ -11,6 +11,23 @@
 				"kind": "build",
 				"isDefault": true
 			}
+		},
+		{
+			"taskName": "typescript-watch",
+			"type": "shell",
+			"command": "tsc",
+			"args": [
+				"-w"
+			],
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared"
+			},
+			"problemMatcher": [
+				"$tsc-watch"
+			]
 		}
 	]
 }

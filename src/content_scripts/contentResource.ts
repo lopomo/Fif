@@ -23,18 +23,32 @@ module BrowserExtension {
 				document.getElementById("teamAssignmentListButtonsContainer").appendChild(div); 
 			}
 
+			if (!document.getElementById("PopiciAwesomeSwitchButton")) {
+				let div = document.createElement("button");
+				div.innerHTML = `Switch Dev/Prod`;
+				div.setAttribute("class", "btn");
+				div.id = 'PopiciAwesomeSwitchButton';
+				div.addEventListener("click", () => {
+					let area = (<HTMLInputElement>document.getElementById("customLayoutConfig"));
+					let newChange = area.value;
+					if(area.value.indexOf('GadgetsVS') !== -1) {
+						newChange = newChange.replace(/GadgetsVS/gi, '2Ring/Gadgets');
+					} else {
+						newChange = newChange.replace(/2Ring\/Gadgets/gi, 'GadgetsVS')
+					}
+					area.value = newChange;
+				});
+				document.getElementById("teamAssignmentListButtonsContainer").appendChild(div);
+			}
+
 			document.removeEventListener("keydown", this.handleKeyboardShotcut);
 			document.addEventListener("keydown", this.handleKeyboardShotcut, false);
 		}
 
-		private handleKeyboardShotcut(e) {
+		private handleKeyboardShotcut = (e) => {
 			if (e.keyCode == 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
 				e.preventDefault();
-				let saveButton = document.querySelectorAll('[widgetid="teamAssignmentSaveButton"]');
-				if (saveButton.length !== 0) {
-					let saveButtonInput = (<HTMLInputElement>saveButton.item(0).firstChild);
-					saveButtonInput.click();
-				}
+				this.clickSave();
 			}
 			if (e.keyCode == 68 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
 				e.preventDefault();
@@ -52,6 +66,14 @@ module BrowserExtension {
 					var formatButton = document.getElementById("PopiciAwesomeFormatButton") as HTMLButtonElement;
 					formatButton.focus();
 				}
+			}
+		}
+
+		private clickSave () {
+			let saveButton = document.querySelectorAll('[widgetid="teamAssignmentSaveButton"]');
+			if (saveButton.length !== 0) {
+				let saveButtonInput = (<HTMLInputElement>saveButton.item(0).firstChild);
+				saveButtonInput.click();
 			}
 		}
 	}
