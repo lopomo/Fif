@@ -1,4 +1,4 @@
-﻿module BrowserExtension {
+module BrowserExtension {
 	export class BackgroundScript {
 		
 		public initialize = () => {
