@@ -20,7 +20,7 @@ module BrowserExtension {
 					let area = (<HTMLInputElement>document.getElementById("customLayoutConfig"));
 					area.value = vkbeautify.xml(area.value);
 				});
-				document.getElementById("teamAssignmentListButtonsContainer").appendChild(div);
+				document.getElementById("teamAssignmentListButtonsContainer").appendChild(div); 
 			}
 
 			document.removeEventListener("keydown", this.handleKeyboardShotcut);
