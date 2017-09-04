@@ -23,11 +23,11 @@ module BrowserExtension {
 				document.getElementById("teamAssignmentListButtonsContainer").appendChild(div);
 			}
 
-			document.removeEventListener("keydown", this.save);
-			document.addEventListener("keydown", this.save, false);
+			document.removeEventListener("keydown", this.handleKeyboardShotcut);
+			document.addEventListener("keydown", this.handleKeyboardShotcut, false);
 		}
 
-		private save(e) {
+		private handleKeyboardShotcut(e) {
 			if (e.keyCode == 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
 				e.preventDefault();
 				let saveButton = document.querySelectorAll('[widgetid="teamAssignmentSaveButton"]');
@@ -35,7 +35,24 @@ module BrowserExtension {
 					let saveButtonInput = (<HTMLInputElement>saveButton.item(0).firstChild);
 					saveButtonInput.click();
 				}
-			}	
+			}
+			if (e.keyCode == 68 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
+				e.preventDefault();
+				if (document.activeElement == document.getElementById("customLayoutConfig")) {
+					var textarea = document.getElementById("customLayoutConfig") as HTMLTextAreaElement;
+					var oldLines = textarea.value.split("\n");
+					var lineNumber = textarea.value.substr(0, textarea.selectionStart).split("\n").length - 1;
+					if (oldLines[lineNumber].indexOf("<!--") != -1 && oldLines[lineNumber].indexOf("-->") != -1) {
+						oldLines[lineNumber] = oldLines[lineNumber].replace(/(<!--)|(-->)/g, '');
+					}
+					else {
+						oldLines[lineNumber] = "<!--" + oldLines[lineNumber] + "-->";
+					}
+					textarea.value = oldLines.join("\r\n");
+					var formatButton = document.getElementById("PopiciAwesomeFormatButton") as HTMLButtonElement;
+					formatButton.focus();
+				}
+			}
 		}
 	}
 }

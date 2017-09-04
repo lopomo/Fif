@@ -1,4 +1,4 @@
-﻿module BrowserExtension {
+module BrowserExtension {
 	export class BackgroundScript {
 		
 		public initialize = () => {
@@ -6,14 +6,14 @@
 				(tabs) => {
 					tabs.forEach((tab) => {
 						chrome.tabs.executeScript(tab.id, { file: "content_scripts/content.js" });
-						chrome.webNavigation.getAllFrames({ tabId: tab.id }, (frames) => {
-							for (let frame of frames) {
-								if (frame.url.indexOf('TeamResources.jsp') !== -1) {
-									chrome.tabs.executeScript(tab.id, { file: "content_scripts/lib/vkbeautify.min.js", frameId: frame.frameId }, () => {
-										chrome.tabs.executeScript(tab.id, { file: "content_scripts/contentResource.js", frameId: frame.frameId });
-									});
-								}
-							}
+
+						chrome.webNavigation.onCompleted.addListener((details) => {
+							chrome.tabs.executeScript(tab.id, { file: "lib/vkbeautify.min.js", frameId: details.frameId }, () => {
+								chrome.tabs.executeScript(tab.id, { file: "content_scripts/contentResource.js", frameId: details.frameId });
+							});
+						},
+						{
+							url: [{ urlContains: 'TeamResources.jsp' }]
 						});
 					});
 				}
