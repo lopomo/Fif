@@ -12,11 +12,11 @@ module BrowserExtension {
 				layout.style.height = "500px";
 			}
 			
-			if (!document.getElementById("PopiciAwesomeFormatButton")) {
+			if (!document.getElementById("FifFormatButton")) {
 				let div = document.createElement("button");
 				div.innerHTML = `Format`;
 				div.setAttribute("class", "btn");
-				div.id = 'PopiciAwesomeFormatButton';
+				div.id = 'FifFormatButton';
 				div.addEventListener("click", () => {
 					let area = (<HTMLInputElement>document.getElementById("customLayoutConfig"));
 					area.value = vkbeautify.xml(area.value);
@@ -24,11 +24,11 @@ module BrowserExtension {
 				document.getElementById("teamAssignmentListButtonsContainer").appendChild(div); 
 			}
 
-			if (!document.getElementById("PopiciAwesomeSwitchButton")) {
+			if (!document.getElementById("FifSwitchButton")) {
 				let div = document.createElement("button");
 				div.innerHTML = `Switch Dev/Prod`;
 				div.setAttribute("class", "btn");
-				div.id = 'PopiciAwesomeSwitchButton';
+				div.id = 'FifSwitchButton';
 				div.addEventListener("click", () => {
 					let area = (<HTMLInputElement>document.getElementById("customLayoutConfig"));
 					let newChange = area.value;
@@ -45,24 +45,22 @@ module BrowserExtension {
 				document.getElementById("teamAssignmentListButtonsContainer").appendChild(div);
 			}
 
-			if (!document.getElementById("PopiciAwesomeSaveButton")) {
+			if (!document.getElementById("FifSaveButton")) {
 				let div = document.createElement("button");
 				let input = document.createElement("input");
-				input.id = 'PopiciAwesomeSaveInput';
+				input.id = 'FifSaveInput';
 				input.style.height = "20px";
 				input.style.position = "relative";
 				input.style.top = "-4px";
 				input.style["margin-left"] = "30px";
 				div.innerHTML = `Save current layout`;
 				div.setAttribute("class", "btn");
-				div.id = 'PopiciAwesomeSaveButton';
+				div.id = 'FifSaveButton';
 				div.addEventListener("click", () => {
-					let layoutName = document.getElementById("PopiciAwesomeSaveInput") as HTMLInputElement;
+					let layoutName = document.getElementById("FifSaveInput") as HTMLInputElement;
 					if (layoutName.value.trim()) {
 						let area = (<HTMLInputElement>document.getElementById("customLayoutConfig"));
-						var e = document.createEvent('HTMLEvents');
-						e.initEvent("keyup", false, true);
-						area.dispatchEvent(e);
+						this.invokeKeyboardEvent(area);
 						chrome.runtime.sendMessage({ command: "save", value: { label: layoutName.value.trim(), value: area.value } });
 					}
 					else { 
@@ -96,26 +94,25 @@ module BrowserExtension {
 						oldLines[lineNumber] = "<!--" + oldLines[lineNumber] + "-->";
 					}
 					textarea.value = oldLines.join("\r\n");
-					var formatButton = document.getElementById("PopiciAwesomeFormatButton") as HTMLButtonElement;
+					var formatButton = document.getElementById("FifFormatButton") as HTMLButtonElement;
 					formatButton.focus();
 				}
 			}
+		
 		}
 
-		private clickSave () {
+		private clickSave = () => {
 			let saveButton = document.querySelectorAll('[widgetid="teamAssignmentSaveButton"]');
 			if (saveButton.length !== 0) {
 				let saveButtonInput = (<HTMLInputElement>saveButton.item(0).firstChild);
-				var e = document.createEvent('HTMLEvents');
-				e.initEvent("keyup", false, true);
-				document.getElementById("customLayoutConfig").dispatchEvent(e);
+				this.invokeKeyboardEvent(document.getElementById("customLayoutConfig"));
 				saveButtonInput.click();
 			}
 		}
 
 		private createSelect = (options: Array<{label: string, value: string}>) => { 
 			var selectList = document.createElement("select");
-			selectList.id = "PopiciAwesomeLoadSelect";
+			selectList.id = "FifLoadSelect";
 			selectList.style["margin-left"] = "30px";
 			selectList.style.width = "100px";
 
@@ -128,16 +125,23 @@ module BrowserExtension {
 			selectList.addEventListener("change", () => {
 				(<HTMLTextAreaElement>document.getElementById("customLayoutConfig")).value = selectList.value;
 			});
-			if (!document.getElementById("PopiciAwesomeLoadSelect")) {
+			if (!document.getElementById("FifLoadSelect")) {
 				document.getElementById("teamAssignmentListButtonsContainer").appendChild(selectList);
 			}
 			else { 
-				document.getElementById("teamAssignmentListButtonsContainer").replaceChild(selectList, document.getElementById("PopiciAwesomeLoadSelect"));
+				document.getElementById("teamAssignmentListButtonsContainer").replaceChild(selectList, document.getElementById("FifLoadSelect"));
 			}
 		}
 
 		private handleReceivedLayouts = (options: Array<{ label: string, value: string }>) => { 
 			this.createSelect(options)
+		}
+
+
+		private invokeKeyboardEvent(element: HTMLElement) {
+			var event = document.createEvent('HTMLEvents');
+			event.initEvent("keyup", false, true);
+			element.dispatchEvent(event);
 		}
 	}
 }
