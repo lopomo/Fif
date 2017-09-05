@@ -2,6 +2,9 @@ module BrowserExtension {
 	export class BackgroundScript {
 		
 		public initialize = () => {
+			chrome.runtime.onMessage.addListener(this.contentScriptMessageReceived);
+			chrome.storage.local.get(this.initializeConfiguration);
+			chrome.storage.onChanged.addListener(this.handleConfigChange);
 			chrome.tabs.query({ title: "Cisco Finesse Administration" },
 				(tabs) => {
 					tabs.forEach((tab) => {
@@ -12,15 +15,29 @@ module BrowserExtension {
 								chrome.tabs.executeScript(tab.id, { file: "content_scripts/contentResource.js", frameId: details.frameId });
 							});
 						},
-						{
-							url: [{ urlContains: 'TeamResources.jsp' }]
-						});
+							{
+								url: [{ urlContains: 'TeamResources.jsp' }]
+							});
 					});
 				}
 			);
 			chrome.tabs.onUpdated.addListener(this.loadContentScript);
+		}
 
+		private initializeConfiguration = (data) => {
+			var layouts: Array<{ lable: string, value: string }> = data.layouts;
+			layouts = layouts ? layouts : []; 
+			chrome.tabs.query({ title: "Cisco Finesse Administration" },
+				(tabs) => {
+					tabs.forEach((tab) => {
+						chrome.tabs.sendMessage(tab.id, layouts);
+					});
+				}
+			);
+		}
 
+		private handleConfigChange = () => { 
+			chrome.storage.local.get(this.initializeConfiguration);
 		}
 
 		private loadContentScript = (tabId: number, changeInfo: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => {
@@ -35,6 +52,24 @@ module BrowserExtension {
 						}
 					}
 				});	
+			}
+		}
+
+		private contentScriptMessageReceived = (request, sender, sendResponse) => {
+			switch (request.command) {
+				case "save":
+					chrome.storage.local.get((data) => {
+						var layouts: Array<{ lable: string, value: string }> = data.layouts;
+						layouts = layouts ? layouts : []; 
+						layouts.push(request.value);
+						chrome.storage.local.set({layouts: layouts});
+					});
+					break;
+				case "getLayouts":
+					this.handleConfigChange();
+					break;
+				default:
+					console.error("BackgroundScript: received unknown command from content script: " + request.command);
 			}
 		}
 	}
