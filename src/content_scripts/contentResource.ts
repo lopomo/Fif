@@ -132,7 +132,7 @@ module BrowserExtension {
 				document.getElementById("teamAssignmentListButtonsContainer").appendChild(selectList);
 			}
 			else { 
-				document.getElementById("teamAssignmentListButtonsContainer").replaceChild(document.getElementById("PopiciAwesomeLoadSelect"), selectList);
+				document.getElementById("teamAssignmentListButtonsContainer").replaceChild(selectList, document.getElementById("PopiciAwesomeLoadSelect"));
 			}
 		}
 
