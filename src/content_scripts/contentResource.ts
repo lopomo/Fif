@@ -1,6 +1,7 @@
 module BrowserExtension {
 	export class ContentScriptResource {
 		public initialize = () => {
+			chrome.runtime.onMessage.addListener(this.handleReceivedLayouts);
 			let tabContent = document.getElementsByClassName("tab-content");
 			for (let index = 0; index < tabContent.length; index++) {
 				let element = (<HTMLElement>tabContent[index]);
@@ -37,9 +38,41 @@ module BrowserExtension {
 						newChange = newChange.replace(/2Ring\/Gadgets/gi, 'GadgetsVS')
 					}
 					area.value = newChange;
+					var e = document.createEvent('HTMLEvents');
+					e.initEvent("keyup", false, true);
+					area.dispatchEvent(e);
 				});
 				document.getElementById("teamAssignmentListButtonsContainer").appendChild(div);
 			}
+
+			if (!document.getElementById("PopiciAwesomeSaveButton")) {
+				let div = document.createElement("button");
+				let input = document.createElement("input");
+				input.id = 'PopiciAwesomeSaveInput';
+				input.style.height = "20px";
+				input.style.position = "relative";
+				input.style.top = "-4px";
+				input.style["margin-left"] = "30px";
+				div.innerHTML = `Save current layout`;
+				div.setAttribute("class", "btn");
+				div.id = 'PopiciAwesomeSaveButton';
+				div.addEventListener("click", () => {
+					let layoutName = document.getElementById("PopiciAwesomeSaveInput") as HTMLInputElement;
+					if (layoutName.value.trim()) {
+						let area = (<HTMLInputElement>document.getElementById("customLayoutConfig"));
+						var e = document.createEvent('HTMLEvents');
+						e.initEvent("keyup", false, true);
+						area.dispatchEvent(e);
+						chrome.runtime.sendMessage({ command: "save", value: { label: layoutName.value.trim(), value: area.value } });
+					}
+					else { 
+						alert("LayoutName has to be specified")
+					}
+				});
+				document.getElementById("teamAssignmentListButtonsContainer").appendChild(input);
+				document.getElementById("teamAssignmentListButtonsContainer").appendChild(div);
+			}
+			chrome.runtime.sendMessage({ command: "getLayouts" });
 
 			document.removeEventListener("keydown", this.handleKeyboardShotcut);
 			document.addEventListener("keydown", this.handleKeyboardShotcut, false);
@@ -73,8 +106,38 @@ module BrowserExtension {
 			let saveButton = document.querySelectorAll('[widgetid="teamAssignmentSaveButton"]');
 			if (saveButton.length !== 0) {
 				let saveButtonInput = (<HTMLInputElement>saveButton.item(0).firstChild);
+				var e = document.createEvent('HTMLEvents');
+				e.initEvent("keyup", false, true);
+				document.getElementById("customLayoutConfig").dispatchEvent(e);
 				saveButtonInput.click();
 			}
+		}
+
+		private createSelect = (options: Array<{label: string, value: string}>) => { 
+			var selectList = document.createElement("select");
+			selectList.id = "PopiciAwesomeLoadSelect";
+			selectList.style["margin-left"] = "30px";
+			selectList.style.width = "100px";
+
+			for (var i = 0; i < options.length; i++) {
+				var option = document.createElement("option");
+				option.value = options[i].value;
+				option.text = options[i].label;
+				selectList.appendChild(option);
+			}
+			selectList.addEventListener("change", () => {
+				(<HTMLTextAreaElement>document.getElementById("customLayoutConfig")).value = selectList.value;
+			});
+			if (!document.getElementById("PopiciAwesomeLoadSelect")) {
+				document.getElementById("teamAssignmentListButtonsContainer").appendChild(selectList);
+			}
+			else { 
+				document.getElementById("teamAssignmentListButtonsContainer").replaceChild(document.getElementById("PopiciAwesomeLoadSelect"), selectList);
+			}
+		}
+
+		private handleReceivedLayouts = (options: Array<{ label: string, value: string }>) => { 
+			this.createSelect(options)
 		}
 	}
 }
