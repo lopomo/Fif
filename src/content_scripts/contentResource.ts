@@ -115,7 +115,11 @@ module BrowserExtension {
 			selectList.id = "FifLoadSelect";
 			selectList.style["margin-left"] = "30px";
 			selectList.style.width = "100px";
-
+			var area = <HTMLTextAreaElement>document.getElementById("customLayoutConfig");
+			var option = document.createElement("option");
+			option.value = "";
+			option.text = "Select layout";
+			selectList.appendChild(option);
 			for (var i = 0; i < options.length; i++) {
 				var option = document.createElement("option");
 				option.value = options[i].value;
@@ -123,7 +127,12 @@ module BrowserExtension {
 				selectList.appendChild(option);
 			}
 			selectList.addEventListener("change", () => {
-				(<HTMLTextAreaElement>document.getElementById("customLayoutConfig")).value = selectList.value;
+				if(selectList.value) {
+					area.value = selectList.value;
+					var e = document.createEvent('HTMLEvents');
+					e.initEvent("keyup", false, true);
+					area.dispatchEvent(e);
+				}
 			});
 			if (!document.getElementById("FifLoadSelect")) {
 				document.getElementById("teamAssignmentListButtonsContainer").appendChild(selectList);
