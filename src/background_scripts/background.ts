@@ -1,18 +1,17 @@
-module BrowserExtension {
+namespace Fif {
 	export class BackgroundScript {
-		
 		public initialize = () => {
 			chrome.runtime.onMessage.addListener(this.contentScriptMessageReceived);
 			chrome.storage.local.get(this.initializeConfiguration);
 			chrome.storage.onChanged.addListener(this.handleConfigChange);
-			chrome.tabs.query({ title: "Cisco Finesse Administration" },
+			chrome.tabs.query({ title: 'Cisco Finesse Administration' },
 				(tabs) => {
 					tabs.forEach((tab) => {
-						chrome.tabs.executeScript(tab.id, { file: "content_scripts/content.js" });
+						chrome.tabs.executeScript(tab.id, { file: 'content_scripts/content.js' });
 
 						chrome.webNavigation.onCompleted.addListener((details) => {
-							chrome.tabs.executeScript(tab.id, { file: "lib/vkbeautify.min.js", frameId: details.frameId }, () => {
-								chrome.tabs.executeScript(tab.id, { file: "content_scripts/contentResource.js", frameId: details.frameId });
+							chrome.tabs.executeScript(tab.id, { file: 'lib/vkbeautify.min.js', frameId: details.frameId }, () => {
+								chrome.tabs.executeScript(tab.id, { file: 'content_scripts/contentResource.js', frameId: details.frameId });
 							});
 						},
 							{
@@ -27,7 +26,7 @@ module BrowserExtension {
 		private initializeConfiguration = (data) => {
 			var layouts: Array<{ lable: string, value: string }> = data.layouts;
 			layouts = layouts ? layouts : []; 
-			chrome.tabs.query({ title: "Cisco Finesse Administration" },
+			chrome.tabs.query({ title: 'Cisco Finesse Administration' },
 				(tabs) => {
 					tabs.forEach((tab) => {
 						chrome.tabs.sendMessage(tab.id, layouts);
@@ -41,39 +40,39 @@ module BrowserExtension {
 		}
 
 		private loadContentScript = (tabId: number, changeInfo: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => {
-			if (tab.title == "Cisco Finesse Administration") {
-				chrome.tabs.executeScript(tab.id, { file: "content_scripts/content.js", runAt: 'document_start' });
+			if (tab.title == 'Cisco Finesse Administration') {
+				chrome.tabs.executeScript(tab.id, { file: 'content_scripts/content.js', runAt: 'document_start' });
 				chrome.webNavigation.getAllFrames({ tabId: tab.id }, (frames) => {
-					for (let frame of frames) {
+					for (const frame of frames) {
 						if (frame.url.indexOf('TeamResources.jsp') !== -1) {
-							chrome.tabs.executeScript(tab.id, { file: "content_scripts/vkbeautify.min.js", frameId: frame.frameId, runAt: 'document_start'}, () => {
-								chrome.tabs.executeScript(tab.id, { file: "content_scripts/contentResource.js", frameId: frame.frameId, runAt: 'document_start'});
+							chrome.tabs.executeScript(tab.id, { file: 'content_scripts/vkbeautify.min.js', frameId: frame.frameId, runAt: 'document_start'}, () => {
+								chrome.tabs.executeScript(tab.id, { file: 'content_scripts/contentResource.js', frameId: frame.frameId, runAt: 'document_start'});
 							});
 						}
 					}
-				});	
+				});
 			}
 		}
 
 		private contentScriptMessageReceived = (request, sender, sendResponse) => {
 			switch (request.command) {
-				case "save":
+				case 'save':
 					chrome.storage.local.get((data) => {
 						var layouts: Array<{ lable: string, value: string }> = data.layouts;
-						layouts = layouts ? layouts : []; 
+						layouts = layouts ? layouts : [];
 						layouts.push(request.value);
 						chrome.storage.local.set({layouts: layouts});
 					});
 					break;
-				case "getLayouts":
+				case 'getLayouts':
 					this.handleConfigChange();
 					break;
 				default:
-					console.error("BackgroundScript: received unknown command from content script: " + request.command);
+					console.error('BackgroundScript: received unknown command from content script: ' + request.command);
 			}
 		}
 	}
-
-	var backgroundScript = new BackgroundScript();
-	backgroundScript.initialize();
 }
+
+const backgroundScript = new Fif.BackgroundScript();
+backgroundScript.initialize();
