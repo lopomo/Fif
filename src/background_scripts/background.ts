@@ -64,6 +64,7 @@ namespace Fif {
 						chrome.storage.local.set({layouts: layouts});
 					});
 					break;
+				case 'remove':
 				case 'getLayouts':
 					this.handleConfigChange();
 					break;

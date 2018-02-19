@@ -33,12 +33,14 @@ namespace Fif {
 				const inputFrom = document.createElement('input');
 				inputFrom.type = 'text';
 				inputFrom.id = 'FifReplaceFromInput';
+				inputFrom.placeholder = 'From';
 				const inputTo = document.createElement('input');
 				inputTo.type = 'text';
 				inputTo.id = 'FifReplaceToInput';
+				inputTo.placeholder = 'To';
 
-
-				buttonSwitch.innerHTML = `<>`;
+				buttonSwitch.innerHTML = '<>';
+				buttonSwitch.title = 'Switch From/To';
 				buttonSwitch.setAttribute('class', 'btn');
 				buttonSwitch.id = 'FifSwitchButton';
 				buttonSwitch.addEventListener('click', () => {
@@ -48,8 +50,7 @@ namespace Fif {
 					inputFrom.value = toValue;
 				});
 
-
-				buttonReplace.innerHTML = `Replace`;
+				buttonReplace.innerHTML = 'Replace';
 				buttonReplace.setAttribute('class', 'btn');
 				buttonReplace.id = 'FifReplaceButton';
 				buttonReplace.addEventListener('click', () => {
@@ -57,7 +58,7 @@ namespace Fif {
 					const fromValue = inputFrom.value;
 					const toValue = inputTo.value;
 					let newChange = area.value;
-					newChange = newChange.replace(fromValue, toValue);
+					newChange = newChange.replace(new RegExp(fromValue, 'g') , toValue);
 					area.value = newChange;
 					const event = document.createEvent('HTMLEvents');
 					event.initEvent('keyup', false, true);
@@ -73,15 +74,16 @@ namespace Fif {
 			}
 
 			if (!document.getElementById('FifSaveButton')) {
-				const div = document.createElement('button');
+				const button = document.createElement('button');
 				const input = document.createElement('input');
-				input.id = 'FifSaveInput';
+				input.id = 'FifLayoutNameInput';
 				input.type = 'text'
-				div.innerHTML = `Save current layout`;
-				div.setAttribute('class', 'btn');
-				div.id = 'FifSaveButton';
-				div.addEventListener('click', () => {
-					const layoutName = document.getElementById('FifSaveInput') as HTMLInputElement;
+				input.placeholder = 'Layout Name';
+				button.innerHTML = `Save layout`;
+				button.setAttribute('class', 'btn');
+				button.id = 'FifSaveButton';
+				button.addEventListener('click', () => {
+					const layoutName = document.getElementById('FifLayoutNameInput') as HTMLInputElement;
 					if (layoutName.value.trim()) {
 						const area = document.getElementById('customLayoutConfig') as HTMLInputElement;
 						this.invokeKeyboardEvent(area);
@@ -93,8 +95,28 @@ namespace Fif {
 				const el = document.getElementById('teamAssignmentListButtonsContainer');
 				if (el) {
 					el.appendChild(input);
-					el.appendChild(div);
+					el.appendChild(button);
 				}
+			}
+
+			if (!document.getElementById('FifRemoveLayoutButton')) {
+				const button = document.createElement('button');
+				button.innerHTML = 'X';
+				button.title = 'Remove layout';
+				button.setAttribute('class', 'btn');
+				button.id = 'FifRemoveLayoutButton';
+				button.addEventListener('click', () => {
+					const layoutList = document.getElementById('FifLayoutList') as HTMLSelectElement;
+					if (layoutList.selectedIndex > 0) {
+						chrome.runtime.sendMessage({ command: 'remove', value: { label: layoutList.options[layoutList.selectedIndex].innerText } });
+					}
+				});
+
+				const el = document.getElementById('teamAssignmentListButtonsContainer');
+				if (el) {
+					el.appendChild(button);
+				}
+
 			}
 			chrome.runtime.sendMessage({ command: 'getLayouts' });
 
@@ -136,9 +158,8 @@ namespace Fif {
 
 		private createSelect = (options: Array<{label: string, value: string}>) => {
 			const selectList = document.createElement('select');
-			selectList.id = 'FifLoadSelect';
-			selectList.style.marginLeft = '30px';
-			selectList.style.width = '100px';
+			selectList.id = 'FifLayoutList';
+			selectList.style.marginLeft = '10px';
 			const area = document.getElementById('customLayoutConfig') as HTMLTextAreaElement;
 			const firstOption = document.createElement('option');
 			firstOption.value = '';
@@ -159,10 +180,10 @@ namespace Fif {
 				}
 			});
 			const el = document.getElementById('teamAssignmentListButtonsContainer');
-			if (!document.getElementById('FifLoadSelect')) {
+			if (!document.getElementById('FifLayoutList')) {
 				el.appendChild(selectList);
 			} else {
-				el.replaceChild(selectList, document.getElementById('FifLoadSelect'));
+				el.replaceChild(selectList, document.getElementById('FifLayoutList'));
 			}
 		}
 
