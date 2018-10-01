@@ -20,6 +20,15 @@ namespace Fif {
 					});
 				}
 			);
+
+			chrome.tabs.query({ url: 'https://sbatfs06/2Ring/*' },
+				(tabs) => {
+					tabs.forEach((tab) => {
+						chrome.tabs.executeScript(tab.id, { file: 'content_scripts/removeDoneColumn.js' });
+					});
+				}
+			);
+
 			chrome.tabs.onUpdated.addListener(this.loadContentScript);
 		}
 
@@ -51,6 +60,10 @@ namespace Fif {
 						}
 					}
 				});
+			}
+
+			if(tab.url && tab.url.startsWith('https://sbatfs06/2Ring')) {
+				chrome.tabs.executeScript(tab.id, { file: 'content_scripts/removeDoneColumn.js' });
 			}
 		}
 
