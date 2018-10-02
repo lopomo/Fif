@@ -35,7 +35,7 @@ namespace Fif {
                        const destinationInput = createBranchDialog[0].querySelector('.bowtie-style input[type=text]');
 
                         const trueStoryName = storyName.innerHTML.split('/')[0];
-                        const taskNameAsBranchName = taskName.innerHTML.toLowerCase().replace(/[!@#$%^&*(), .?":{}|<>]/g, '_');
+                        const taskNameAsBranchName = taskName.innerHTML.toLowerCase().replace(/[!@#$%^&*/(), .?":{}|<>]/g, '_');
 
                         (destinationInput as HTMLInputElement).value =  trueStoryName + '/' + taskNameAsBranchName;
                         const event = document.createEvent('HTMLEvents');
