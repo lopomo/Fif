@@ -1,10 +1,10 @@
 namespace Fif {
 	export class RemoveDoneColumnScript {
 		public initialize = () => {
-            const lastcolumns = document.querySelectorAll('td.taskboard-cell.ui-droppable[axis="taskboard-table-body_s5"]');
-            for(let i = 0; i < lastcolumns.length; i++) {
-                (lastcolumns[i] as HTMLElement).style.display = 'none';;
-            }
+            // const lastcolumns = document.querySelectorAll('td.taskboard-cell.ui-droppable[axis="taskboard-table-body_s5"]');
+            // for(let i = 0; i < lastcolumns.length; i++) {
+            //     (lastcolumns[i] as HTMLElement).style.display = 'none';;
+            // }
             // if (document.getElementById('taskboard-table-body')) {
             //     document.getElementById('taskboard-table-body').style['table-layout'] = 'auto';
             // }

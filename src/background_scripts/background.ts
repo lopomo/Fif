@@ -20,6 +20,50 @@ namespace Fif {
 					});
 				}
 			);
+			chrome.contextMenus.create({
+				targetUrlPatterns: ['https://sbatfs06/2Ring/*'],
+				type: 'normal',
+				onclick: (data) => {
+					chrome.tabs.query({ url: data.pageUrl },
+						(tabs) => {
+							tabs.forEach((tab) => {
+								chrome.tabs.executeScript(tab.id, 
+									{ code: `
+										var lastcolumns = document.querySelectorAll('td.taskboard-cell.ui-droppable[axis="taskboard-table-body_s5"]');
+										for(let i = 0; i < lastcolumns.length; i++) {
+											lastcolumns[i].style.display = 'none';
+										}
+									`}
+								);
+							});
+						}
+					);
+				},
+				id: "removeDoneField",
+				title: "Remove DONE"
+			});
+			chrome.contextMenus.create({
+				targetUrlPatterns: ['https://sbatfs06/2Ring/*'],
+				type: 'normal',
+				onclick: (data) => {
+					chrome.tabs.query({ url: data.pageUrl },
+						(tabs) => {
+							tabs.forEach((tab) => {
+								chrome.tabs.executeScript(tab.id, 
+									{ code: `
+										var lastcolumns = document.querySelectorAll('td.taskboard-cell.ui-droppable[axis="taskboard-table-body_s5"]');
+										for(let i = 0; i < lastcolumns.length; i++) {
+											lastcolumns[i].style.display = 'table-cell';
+										}
+									`}
+								);
+							});
+						}
+					);	
+				},
+				id: "showDoneField",
+				title: "Show DONE"
+			});
 
 			chrome.tabs.query({ url: 'https://sbatfs06/2Ring/*' },
 				(tabs) => {
