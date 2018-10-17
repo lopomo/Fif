@@ -22,6 +22,7 @@ namespace Fif {
 			);
 			chrome.contextMenus.create({
 				targetUrlPatterns: ['https://sbatfs06/2Ring/*'],
+				documentUrlPatterns: ['https://sbatfs06/2Ring/*'],
 				type: 'normal',
 				onclick: (data) => {
 					chrome.tabs.query({ url: data.pageUrl },
@@ -61,6 +62,7 @@ namespace Fif {
 			});
 			chrome.contextMenus.create({
 				targetUrlPatterns: ['https://sbatfs06/2Ring/*'],
+				documentUrlPatterns: ['https://sbatfs06/2Ring/*'],
 				type: 'normal',
 				onclick: (data) => {
 					chrome.tabs.query({ url: data.pageUrl },
