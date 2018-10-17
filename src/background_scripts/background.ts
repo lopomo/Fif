@@ -29,9 +29,26 @@ namespace Fif {
 							tabs.forEach((tab) => {
 								chrome.tabs.executeScript(tab.id, 
 									{ code: `
+										var others = document.querySelectorAll('td.taskboard-cell.ui-droppable[axis*="taskboard-table-body_s"]');
+										for(let i = 0; i < others.length; i++) {
+											others[i].setAttribute("style", "width: 20%;");
+										}
+										var headers = document.querySelectorAll('th.taskboard-cell[id*="taskboard-table-header_s"]');
+										for(let i = 0; i < headers.length; i++) {
+											headers[i].setAttribute("style", "width: 20%;");
+										}
 										var lastcolumns = document.querySelectorAll('td.taskboard-cell.ui-droppable[axis="taskboard-table-body_s5"]');
 										for(let i = 0; i < lastcolumns.length; i++) {
 											lastcolumns[i].style.display = 'none';
+										}
+										if (document.getElementById('taskboard-table-header_s5')) {
+											document.getElementById('taskboard-table-header_s5').style.display = 'none';
+										}
+										if (document.getElementById('taskboard-table-body')) {
+											document.getElementById('taskboard-table-body').style['table-layout'] = 'auto';
+										}
+										if (document.getElementById('taskboard-table-header')) {
+											document.getElementById('taskboard-table-header').style['table-layout'] = 'auto';
 										}
 									`}
 								);
@@ -51,9 +68,26 @@ namespace Fif {
 							tabs.forEach((tab) => {
 								chrome.tabs.executeScript(tab.id, 
 									{ code: `
+										var others = document.querySelectorAll('td.taskboard-cell.ui-droppable[axis*="taskboard-table-body_s"]');
+										for(let i = 0; i < others.length; i++) {
+											others[i].setAttribute("style", "width: 16.6667%;");
+										}
+										var headers = document.querySelectorAll('th.taskboard-cell[id*="taskboard-table-header_s"]');
+										for(let i = 0; i < headers.length; i++) {
+											headers[i].setAttribute("style", "width: 16.6667%;");
+										}
 										var lastcolumns = document.querySelectorAll('td.taskboard-cell.ui-droppable[axis="taskboard-table-body_s5"]');
 										for(let i = 0; i < lastcolumns.length; i++) {
 											lastcolumns[i].style.display = 'table-cell';
+										}
+										if (document.getElementById('taskboard-table-header_s5')) {
+											document.getElementById('taskboard-table-header_s5').style.display = 'table-cell';
+										}
+										if (document.getElementById('taskboard-table-body')) {
+											document.getElementById('taskboard-table-body').style['table-layout'] = 'fixed';
+										}
+										if (document.getElementById('taskboard-table-header')) {
+											document.getElementById('taskboard-table-header').style['table-layout'] = 'fixed';
 										}
 									`}
 								);
