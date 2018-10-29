@@ -1,27 +1,9 @@
 namespace Fif {
 	export class RemoveDoneColumnScript {
+        private doneState: boolean;
 		public initialize = () => {
-            // const lastcolumns = document.querySelectorAll('td.taskboard-cell.ui-droppable[axis="taskboard-table-body_s5"]');
-            // for(let i = 0; i < lastcolumns.length; i++) {
-            //     (lastcolumns[i] as HTMLElement).style.display = 'none';;
-            // }
-            // if (document.getElementById('taskboard-table-body')) {
-            //     document.getElementById('taskboard-table-body').style['table-layout'] = 'auto';
-            // }
-            // if (document.getElementById('taskboard-table-header')) {
-            //     document.getElementById('taskboard-table-header').style['table-layout'] = 'auto';
-            // }
-            // if (document.getElementById('taskboard-table-header_s5')) {
-            //     document.getElementById('taskboard-table-header_s5').style.display = 'none';
-            // }
-            // const others = document.querySelectorAll('td.taskboard-cell.ui-droppable[axis*="taskboard-table-body_s"]');
-            // for(let i = 0; i < others.length; i++) {
-            //     others[i].setAttribute("style", "width: 20%;");
-            // }
-            // const headers = document.querySelectorAll('th.taskboard-cell[id*="taskboard-table-header_s"]');
-            // for(let i = 0; i < headers.length; i++) {
-            //     headers[i].setAttribute("style", "width: 20%;");
-            // }
+            chrome.storage.local.get(this.handleInit);
+			chrome.storage.onChanged.addListener(this.handleChange);
 
             const targetNode = document.getElementById('PopupContentContainer');
             const config = { attributes: false, childList: true, subtree: false };
@@ -51,6 +33,52 @@ namespace Fif {
             });
             observer.observe(targetNode, config);
         }
+
+        private handleInit = (data: any) => {
+            if (this.doneState != data.doneState) {
+                this.doneState = data.doneState;
+                this.handleDoneStateChange();
+            }
+        }
+
+        private handleChange = () => {
+            chrome.storage.local.get(this.handleInit);
+        }
+
+        private handleDoneStateChange = () => {
+            let width, display, tableLayout;
+            if (this.doneState) {
+                width = '16.6667%';
+                display = 'table-cell';
+                tableLayout = 'fixed';
+            } else {
+                width = '20%';
+                display = 'none';
+                tableLayout = 'auto';
+            }
+            var others = document.querySelectorAll('td.taskboard-cell.ui-droppable[axis*="taskboard-table-body_s"]');
+            for(let i = 0; i < others.length; i++) {
+                others[i].setAttribute("style", `width: ${width};`);
+            }
+            var headers = document.querySelectorAll('th.taskboard-cell[id*="taskboard-table-header_s"]');
+            for(let i = 0; i < headers.length; i++) {
+                headers[i].setAttribute("style", `width: ${width};`);
+            }
+            var lastcolumns = document.querySelectorAll('td.taskboard-cell.ui-droppable[axis="taskboard-table-body_s5"]');
+            for(let i = 0; i < lastcolumns.length; i++) {
+                (lastcolumns[i] as HTMLElement).style.display = display;
+            }
+            if (document.getElementById('taskboard-table-header_s5')) {
+                document.getElementById('taskboard-table-header_s5').style.display = display;
+            }
+            if (document.getElementById('taskboard-table-body')) {
+                document.getElementById('taskboard-table-body').style['table-layout'] = tableLayout;
+            }
+            if (document.getElementById('taskboard-table-header')) {
+                document.getElementById('taskboard-table-header').style['table-layout'] = tableLayout;
+            }
+        }
+        
 	}
 }
 
