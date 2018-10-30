@@ -21,8 +21,8 @@ namespace Fif {
 				}
 			);
 			chrome.contextMenus.create({
-				targetUrlPatterns: ['https://sbatfs06/2Ring/*'],
-				documentUrlPatterns: ['https://sbatfs06/2Ring/*'],
+				targetUrlPatterns: ['*://sbatfs06/2Ring/!ProductBacklog-Blue/Blue/_backlogs/Taskboard*', '*://sbatfs06/2Ring/!ProductBacklog-Blue/Green/_backlogs/Taskboard*'],
+				documentUrlPatterns: ['*://sbatfs06/2Ring/!ProductBacklog-Blue/Blue/_backlogs/Taskboard*', '*://sbatfs06/2Ring/!ProductBacklog-Blue/Green/_backlogs/Taskboard*'],
 				type: 'normal',
 				onclick: (data) => {
 					chrome.tabs.query({ url: data.pageUrl },
@@ -41,8 +41,8 @@ namespace Fif {
 				title: "Remove DONE"
 			});
 			chrome.contextMenus.create({
-				targetUrlPatterns: ['https://sbatfs06/2Ring/*'],
-				documentUrlPatterns: ['https://sbatfs06/2Ring/*'],
+				targetUrlPatterns: ['*://sbatfs06/2Ring/!ProductBacklog-Blue/Blue/_backlogs/Taskboard*', '*://sbatfs06/2Ring/!ProductBacklog-Blue/Green/_backlogs/Taskboard*'],
+				documentUrlPatterns: ['*://sbatfs06/2Ring/!ProductBacklog-Blue/Blue/_backlogs/Taskboard*', '*://sbatfs06/2Ring/!ProductBacklog-Blue/Green/_backlogs/Taskboard*'],
 				type: 'normal',
 				onclick: (data) => {
 					chrome.tabs.query({ url: data.pageUrl },
@@ -61,7 +61,7 @@ namespace Fif {
 				title: "Show DONE"
 			});
 
-			chrome.tabs.query({ url: 'https://sbatfs06/2Ring/*' },
+			chrome.tabs.query({ url: ['*://sbatfs06/2Ring/!ProductBacklog-Blue/Blue/_backlogs/Taskboard*', '*://sbatfs06/2Ring/!ProductBacklog-Blue/Green/_backlogs/Taskboard*'] },
 				(tabs) => {
 					tabs.forEach((tab) => {
 						chrome.tabs.executeScript(tab.id, { file: 'content_scripts/removeDoneColumn.js' });
