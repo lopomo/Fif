@@ -3,7 +3,25 @@ namespace Fif {
         private doneState: boolean;
 		public initialize = () => {
             chrome.storage.local.get(this.handleInit);
-			chrome.storage.onChanged.addListener(this.handleChange);
+            chrome.storage.onChanged.addListener(this.handleChange);
+
+            const createCopyButton = document.querySelectorAll('.vc-branches-container');
+            if (createCopyButton.length > 0 && !document.getElementById('cc_copyBranchNameButton')) {
+                var template = document.createElement('div');
+                template.id = 'cc_copyBranchNameButton';
+                template.style.position = 'absolute';
+                template.className = 'bowtie-edit-copy bowtie-icon icon';
+                template.style.top = '17px';
+                template.style.left = '0px';
+                template.style.cursor = 'pointer';
+                template.onclick = () => {
+                    const branchName = createCopyButton[0].querySelector('.filtered-list-dropdown-menu');
+                    const n = branchName.attributes.getNamedItem('title').value;
+                    this.copyStringToClipboard(n);
+                };
+                createCopyButton[0].appendChild(template);
+            }
+
 
             const targetNode = document.getElementById('PopupContentContainer');
             const config = { attributes: false, childList: true, subtree: false };
@@ -22,8 +40,12 @@ namespace Fif {
 
                         const trueStoryName = storyName.innerHTML.split('/')[0];
                         const taskNameAsBranchName = taskName.innerHTML.toLowerCase().replace(/[!@#$%^&*/(), .?":{}|<>]/g, '_');
+                        if (trueStoryName === 'dev') {
+                            (destinationInput as HTMLInputElement).value =  taskNameAsBranchName + '/story';
+                        } else {
+                            (destinationInput as HTMLInputElement).value =  trueStoryName + '/' + taskNameAsBranchName;
+                        }
 
-                        (destinationInput as HTMLInputElement).value =  trueStoryName + '/' + taskNameAsBranchName;
                         const event = document.createEvent('HTMLEvents');
                         event.initEvent('keyup', false, true);
                         destinationInput.dispatchEvent(event);
@@ -31,7 +53,9 @@ namespace Fif {
                     createBranchDialog[0].querySelector('.ui-dialog-buttonset').appendChild(template);
                 }
             });
-            observer.observe(targetNode, config);
+            if (targetNode) {
+                observer.observe(targetNode, config);
+            }
         }
 
         private handleInit = (data: any) => {
@@ -40,6 +64,24 @@ namespace Fif {
                 this.handleDoneStateChange();
             }
         }
+
+        private copyStringToClipboard (str) {
+            // Create new element
+            var el = document.createElement('textarea');
+            // Set value (string to be copied)
+            el.value = str;
+            // Set non-editable to avoid focus and move outside of view
+            el.setAttribute('readonly', '');
+            el.style.position = 'absolute';
+            el.style.left = '-9999px';
+            document.body.appendChild(el);
+            // Select text inside element
+            el.select();
+            // Copy text to clipboard
+            document.execCommand('copy');
+            // Remove temporary element
+            document.body.removeChild(el);
+         }
 
         private handleChange = () => {
             chrome.storage.local.get(this.handleInit);
